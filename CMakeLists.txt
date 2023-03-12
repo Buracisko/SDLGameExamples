@@ -30,9 +30,10 @@ if (MSVC)
 	add_executable(Example2 WIN32 ${CORE_SOURCES} "src/example2/example2.cpp")
 	target_include_directories(Example1 PRIVATE "src")
 	target_include_directories(Example2 PRIVATE "src")
+
 	# warning level 3
-	# TODO: Set it for all targets
 	target_compile_options(Example1 PRIVATE /W3)
+	target_compile_options(Example2 PRIVATE /W3)
 
 	list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
 
