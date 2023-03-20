@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 	if (!mainFont)
 	{
 		fprintf(stderr, "TTF_OpenFont error: %s\n", TTF_GetError());
-		return NULL;
+		return 1;
 	}
 
 	// Render text
