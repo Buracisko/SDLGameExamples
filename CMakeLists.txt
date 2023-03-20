@@ -43,7 +43,11 @@ if (MSVC)
 
 else()
 	add_executable(Example1 ${CORE_SOURCES} "src/example1/example1.cpp")
-	add_executable(Example2 ${CORE_SOURCES} "src/example2/example2.cpp")
+	add_executable(Example2 ${CORE_SOURCES}
+		"src/example2/example2.cpp"
+		"src/example2/ship.cpp"
+		"src/example2/ship.h"
+	)
 
 	# Warn a lot
 	target_compile_options(Example1 PRIVATE -Wall -Wextra -pedantic -Werror -Wconversion -Wshadow -Wno-unused-parameter)
@@ -51,7 +55,7 @@ else()
 endif()
 
 target_include_directories(Example1 PRIVATE "src")
-target_include_directories(Example2 PRIVATE "src")
+target_include_directories(Example2 PRIVATE "src" "src/example2")
 	
 target_link_libraries(Example1 PRIVATE SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
 target_link_libraries(Example2 PRIVATE SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
