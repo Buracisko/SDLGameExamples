@@ -36,8 +36,6 @@ find_package(SDL2_ttf REQUIRED)
 if (MSVC)
 	add_executable(Example1 WIN32 ${CORE_SOURCES} "src/example1/example1.cpp")
 	add_executable(Example2 WIN32 ${CORE_SOURCES} "src/example2/example2.cpp")
-	target_include_directories(Example1 PRIVATE "src")
-	target_include_directories(Example2 PRIVATE "src")
 
 	# warning level 3
 	target_compile_options(Example1 PRIVATE /W3)
@@ -51,6 +49,9 @@ else()
 	target_compile_options(Example1 PRIVATE -Wall -Wextra -pedantic -Werror -Wconversion -Wshadow -Wno-unused-parameter)
 	target_compile_options(Example2 PRIVATE -Wall -Wextra -pedantic -Werror -Wconversion -Wshadow -Wno-unused-parameter)
 endif()
+
+target_include_directories(Example1 PRIVATE "src")
+target_include_directories(Example2 PRIVATE "src")
 	
 target_link_libraries(Example1 PRIVATE SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
 target_link_libraries(Example2 PRIVATE SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
