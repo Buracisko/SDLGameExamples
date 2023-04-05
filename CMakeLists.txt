@@ -35,7 +35,11 @@ find_package(SDL2_ttf REQUIRED)
 
 if (MSVC)
 	add_executable(Example1 WIN32 ${CORE_SOURCES} "src/example1/example1.cpp")
-	add_executable(Example2 WIN32 ${CORE_SOURCES} "src/example2/example2.cpp")
+	add_executable(Example2 WIN32 ${CORE_SOURCES}
+		"src/example2/example2.cpp"
+		"src/example2/ship.cpp"
+		"src/example2/ship.h"
+	)
 
 	# warning level 3
 	target_compile_options(Example1 PRIVATE /W3)
