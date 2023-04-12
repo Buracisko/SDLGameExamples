@@ -22,10 +22,7 @@ SDL_Texture* LoadSprite(const char* path);
 SDL_Texture* sprite;
 int spriteWidth, spriteHeight;
 
-double shipPosX, shipPosY;
-double shipSpeed;
-double shipFriction;
-double shipAcc;
+Ship playerShip;
 
 //=============================================================================
 int main(int argc, char* argv[])
@@ -61,11 +58,12 @@ int main(int argc, char* argv[])
 
 void OnGameLaunch()
 {
-	shipPosX = WINDOW_WIDTH / 2;
-	shipPosY = WINDOW_HEIGHT - 100;
-	shipSpeed = 0;
-	shipAcc = 3.5;
-	shipFriction = 0.1;
+	playerShip.positionX = WINDOW_WIDTH / 2;
+	playerShip.positionY = WINDOW_HEIGHT - 100;
+	playerShip.speed = 0;
+	playerShip.rotation = 0;
+	playerShip.acceleration = 0.2;
+	playerShip.friction = 0.1;
 }
 
 void Update(float dt)
@@ -77,18 +75,19 @@ void Update(float dt)
 
 	if (IsKeyDown(SDL_SCANCODE_UP))
 	{
-		shipSpeed = shipAcc;
+		ShipAccelerate(&playerShip);
 	}
 
-	shipPosY -= shipSpeed;
-
-	if (shipSpeed > 0)
+	if (IsKeyDown(SDL_SCANCODE_RIGHT))
 	{
-		shipSpeed -= shipFriction;
+		playerShip.rotation += 1;
+	}
+	else if (IsKeyDown(SDL_SCANCODE_LEFT))
+	{
+		playerShip.rotation -= 1;
 	}
 
-	if (fabs(shipSpeed) < 0.1)
-		shipSpeed = 0;
+	ShipUpdate(&playerShip);
 }
 
 void RenderFrame(float interpolation)
@@ -99,12 +98,12 @@ void RenderFrame(float interpolation)
 
 	// Draw ship
 	const SDL_Rect shipRect = {
-		(int)((shipPosX - spriteWidth / 2) + 0.5),
-		(int)((shipPosY - spriteHeight / 2) + 0.5),
+		(int)((playerShip.positionX - spriteWidth / 2) + 0.5),
+		(int)((playerShip.positionY - spriteHeight / 2) + 0.5),
 		spriteWidth,
 		spriteHeight
 	};
-	SDL_RenderCopyEx(gRenderer, sprite, NULL, &shipRect, 0, NULL, SDL_RendererFlip::SDL_FLIP_VERTICAL);
+	SDL_RenderCopyEx(gRenderer, sprite, NULL, &shipRect, playerShip.rotation, NULL, SDL_RendererFlip::SDL_FLIP_VERTICAL);
 }
 
 SDL_Texture* LoadSprite(const char* path)
