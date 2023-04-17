@@ -1,6 +1,6 @@
 #include "ship.h"
-
-#define _USE_MATH_DEFINES
+#include "engine.h"
+#include "SDL.h"
 #include <math.h>
 
 void ShipAccelerate(Ship* ship)
@@ -20,4 +20,15 @@ void ShipUpdate(Ship* ship)
 
 	if (ship->speed < 0.1)
 		ship->speed = 0;
+}
+
+void ShipRender(Ship* ship, SDL_Texture* sprite)
+{
+	const SDL_Rect target = {
+		(int)((ship->positionX - ship->width / 2) + 0.5),
+		(int)((ship->positionY - ship->height / 2) + 0.5),
+		ship->width,
+		ship->height
+	};
+	SDL_RenderCopyEx(gRenderer, sprite, NULL, &target, ship->rotation, NULL, SDL_RendererFlip::SDL_FLIP_VERTICAL);
 }

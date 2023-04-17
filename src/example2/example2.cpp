@@ -20,9 +20,8 @@ SDL_Texture* LoadSprite(const char* path);
 
 // Testing sprite
 SDL_Texture* sprite;
-int spriteWidth, spriteHeight;
 
-Ship playerShip;
+Ship playerShip = {};
 
 //=============================================================================
 int main(int argc, char* argv[])
@@ -39,7 +38,6 @@ int main(int argc, char* argv[])
 	
 	// Load sprite
 	sprite = LoadSprite("assets/kenney_piratepack/PNG/Default size/Ships/ship (5).png");
-	SDL_QueryTexture(sprite, NULL, NULL, &spriteWidth, &spriteHeight);
 
 	OnGameLaunch();
 
@@ -60,10 +58,9 @@ void OnGameLaunch()
 {
 	playerShip.positionX = WINDOW_WIDTH / 2;
 	playerShip.positionY = WINDOW_HEIGHT - 100;
-	playerShip.speed = 0;
-	playerShip.rotation = 0;
 	playerShip.acceleration = 0.2;
 	playerShip.friction = 0.1;
+	SDL_QueryTexture(sprite, NULL, NULL, &playerShip.width, &playerShip.height);
 }
 
 void Update(float dt)
@@ -96,19 +93,12 @@ void RenderFrame(float interpolation)
 	SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 255);
 	SDL_RenderClear(gRenderer);
 
-	// Draw ship
-	const SDL_Rect shipRect = {
-		(int)((playerShip.positionX - spriteWidth / 2) + 0.5),
-		(int)((playerShip.positionY - spriteHeight / 2) + 0.5),
-		spriteWidth,
-		spriteHeight
-	};
-	SDL_RenderCopyEx(gRenderer, sprite, NULL, &shipRect, playerShip.rotation, NULL, SDL_RendererFlip::SDL_FLIP_VERTICAL);
+	// Render ship
+	ShipRender(&playerShip, sprite);
 }
 
 SDL_Texture* LoadSprite(const char* path)
 {
-
 	SDL_Texture* texture = IMG_LoadTexture(gRenderer, path);
 	if (texture == NULL)
 	{
