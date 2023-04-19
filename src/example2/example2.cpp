@@ -56,11 +56,11 @@ int main(int argc, char* argv[])
 
 void OnGameLaunch()
 {
-	playerShip.positionX = WINDOW_WIDTH / 2;
-	playerShip.positionY = WINDOW_HEIGHT - 100;
-	playerShip.maxSpeed = 4;
-	playerShip.acceleration = 0.15;
-	playerShip.friction = playerShip.acceleration / 4;
+	playerShip.positionX = 100;
+	playerShip.positionY = WINDOW_HEIGHT / 2;
+	playerShip.mass = 10.0;
+	playerShip.dragCoef = .0;
+	playerShip.rotation = 90;
 	SDL_QueryTexture(sprite, NULL, NULL, &playerShip.width, &playerShip.height);
 }
 
@@ -78,14 +78,17 @@ void Update(float dt)
 
 	if (IsKeyDown(SDL_SCANCODE_RIGHT))
 	{
-		playerShip.rotation += 45 * dt;
+		playerShip.rotation += 90 * dt;
 	}
 	else if (IsKeyDown(SDL_SCANCODE_LEFT))
 	{
-		playerShip.rotation -= 45 * dt;
+		playerShip.rotation -= 90 * dt;
 	}
 
-	ShipUpdate(&playerShip);
+	if (IsKeyDown(SDL_SCANCODE_SPACE))
+		playerShip.positionX = -100;
+
+	ShipUpdate(&playerShip, dt);
 }
 
 void RenderFrame(float interpolation)

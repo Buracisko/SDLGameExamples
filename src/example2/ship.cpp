@@ -5,23 +5,26 @@
 
 void ShipAccelerate(Ship* ship)
 {
-	ship->speed += ship->acceleration;
-	if (ship->speed > ship->maxSpeed)
-		ship->speed = ship->maxSpeed;
+	ship->thrust = 100;
+	ship->mass = 50.0;
+	ship->dragCoef = .8;
 }
 
-void ShipUpdate(Ship* ship)
+void ShipUpdate(Ship* ship, float dt)
 {
-	double dirX = sin((ship->rotation * M_PI) / 180);
-	double dirY = -cos((ship->rotation * M_PI) / 180);
+	double totalFoce;
+	double acceleration;
+	double newVelocity;
+	double newPosition;
 
-	ship->positionY += dirY * ship->speed;
-	ship->positionX += dirX * ship->speed;
+	totalFoce = ship->thrust - ship->dragCoef * ship->velocity * ship->velocity;
+	acceleration = totalFoce / ship->mass;
 
-	ship->speed -= ship->friction;
+	newVelocity = ship->velocity + acceleration * dt;
+	newPosition = ship->positionX + newVelocity * dt;
 
-	if (ship->speed < 0.1)
-		ship->speed = 0;
+	ship->velocity = newVelocity;
+	ship->positionX = newPosition;
 }
 
 void DebugRender(Ship* ship)
