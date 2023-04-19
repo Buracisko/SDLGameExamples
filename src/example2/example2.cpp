@@ -58,8 +58,9 @@ void OnGameLaunch()
 {
 	playerShip.positionX = WINDOW_WIDTH / 2;
 	playerShip.positionY = WINDOW_HEIGHT - 100;
-	playerShip.acceleration = 0.2;
-	playerShip.friction = 0.1;
+	playerShip.maxSpeed = 4;
+	playerShip.acceleration = 0.15;
+	playerShip.friction = playerShip.acceleration / 4;
 	SDL_QueryTexture(sprite, NULL, NULL, &playerShip.width, &playerShip.height);
 }
 
@@ -77,11 +78,11 @@ void Update(float dt)
 
 	if (IsKeyDown(SDL_SCANCODE_RIGHT))
 	{
-		playerShip.rotation += 1;
+		playerShip.rotation += 45 * dt;
 	}
 	else if (IsKeyDown(SDL_SCANCODE_LEFT))
 	{
-		playerShip.rotation -= 1;
+		playerShip.rotation -= 45 * dt;
 	}
 
 	ShipUpdate(&playerShip);

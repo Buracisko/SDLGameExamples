@@ -7,6 +7,7 @@ typedef struct Ship
 	double positionX, positionY;
 	int width, height;
 	double speed;
+	double maxSpeed;
 	double friction;
 	double acceleration;
 	double rotation;
