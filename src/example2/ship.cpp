@@ -5,9 +5,9 @@
 
 void ShipAccelerate(Ship* ship)
 {
-	ship->thrust = 100;
-	ship->mass = 50.0;
-	ship->dragCoef = .8;
+	ship->thrust = 400;
+	ship->mass = 1;
+	ship->dragCoef = 2;
 }
 
 void ShipUpdate(Ship* ship, float dt)
@@ -17,7 +17,7 @@ void ShipUpdate(Ship* ship, float dt)
 	double newVelocity;
 	double newPosition;
 
-	totalFoce = ship->thrust - ship->dragCoef * ship->velocity * ship->velocity;
+	totalFoce = ship->thrust - ship->dragCoef * ship->velocity;
 	acceleration = totalFoce / ship->mass;
 
 	newVelocity = ship->velocity + acceleration * dt;
