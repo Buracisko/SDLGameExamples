@@ -161,12 +161,6 @@ void Update(float dt)
 	else if (IsKeyDown(SDL_SCANCODE_UP))
 		displacement.y -= speed * dt;
 
-	// Collision information
-	bool isColliding = false;
-	Vec2 contactPoint = {};
-	Vec2 contactNormal = {};
-	float contactTime = .0f;
-
 	// Check if rectangle is actually moving - we assume rectangles are NOT in collision to start
 	if (displacement.x != 0 || displacement.y != 0)
 	{
@@ -177,20 +171,28 @@ void Update(float dt)
 		expandedTargetRect.w += rects[0].w;
 		expandedTargetRect.h += rects[0].h;
 
+		// Collision information
+		Vec2 contactPoint = {};
+		Vec2 contactNormal = {};
+		float contactTime = .0f;
+
 		// Are we colliding with the target rect?
 		if (RayVsRect(&positionCenter, &displacement, &expandedTargetRect, &contactPoint, &contactNormal, &contactTime)
 			&& (contactTime >= 0.0f && contactTime < 1.0f)
 		)
 		{
-				isColliding = true;
+			// Resolve if we have a normal
+			if (contactNormal.x != 0 || contactNormal.y != 0)
+			{
+				displacement.x += contactNormal.x * fabs(displacement.x) * (1 - contactTime);
+				displacement.y += contactNormal.y * fabs(displacement.y) * (1 - contactTime);
+			}
+			// Else no displacement
+			else
+			{
+				displacement.x = displacement.y = 0;
+			}
 		}
-	}
-
-	// If there is a colision, resolve it
-	if (isColliding)
-	{
-		displacement.x += contactNormal.x * fabs(displacement.x) * (1 - contactTime);
-		displacement.y += contactNormal.y * fabs(displacement.y) * (1 - contactTime);
 	}
 
 	rects[0].x += (int)(displacement.x);
