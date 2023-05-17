@@ -32,9 +32,11 @@ void DebugRender(Ship* ship)
 	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 255);
 	double dirX = sin((ship->rotation * M_PI) / 180);
 	double dirY = -cos((ship->rotation * M_PI) / 180);
-	SDL_RenderDrawLineF(gRenderer,
-		(float)ship->positionX, (float)ship->positionY,
-		(float)(ship->positionX + dirX * ship->height), (float)(ship->positionY + dirY * ship->height)
+	SDL_RenderDrawLine(gRenderer,
+		(int)(ship->positionX + 0.5),
+		(int)(ship->positionY + 0.5),
+		(int)(ship->positionX + dirX * ship->height + 0.5),
+		(int)(ship->positionY + dirY * ship->height + 0.5)
 	);
 }
 
