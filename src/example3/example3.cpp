@@ -12,8 +12,6 @@
 // Forward function declarations
 void Update(float dt);
 void RenderFrame(float dt);
-SDL_Texture* LoadSprite(const char* path);
-SDL_Texture* RenderText(const char* str, SDL_Colour colour, TTF_Font* font, SDL_Rect* textRect);
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 360
@@ -184,8 +182,8 @@ void Update(float dt)
 			// Resolve if we have a normal
 			if (contactNormal.x != 0 || contactNormal.y != 0)
 			{
-				displacement.x += contactNormal.x * fabs(displacement.x) * (1 - contactTime);
-				displacement.y += contactNormal.y * fabs(displacement.y) * (1 - contactTime);
+				displacement.x += contactNormal.x * fabsf(displacement.x) * (1 - contactTime);
+				displacement.y += contactNormal.y * fabsf(displacement.y) * (1 - contactTime);
 			}
 			// Else no displacement
 			else
