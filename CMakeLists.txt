@@ -40,10 +40,14 @@ if (MSVC)
 		"src/example2/ship.cpp"
 		"src/example2/ship.h"
 	)
+	add_executable(Example3 WIN32 ${CORE_SOURCES}
+		"src/example3/example3.cpp"
+	)
 
 	# warning level 3
 	target_compile_options(Example1 PRIVATE /W3)
 	target_compile_options(Example2 PRIVATE /W3)
+	target_compile_options(Example3 PRIVATE /W3)
 
 else()
 	add_executable(Example1 ${CORE_SOURCES} "src/example1/example1.cpp")
@@ -52,17 +56,23 @@ else()
 		"src/example2/ship.cpp"
 		"src/example2/ship.h"
 	)
+	add_executable(Example3 ${CORE_SOURCES}
+		"src/example3/example3.cpp"
+	)
 
 	# Warn a lot
 	target_compile_options(Example1 PRIVATE -Wall -Wextra -pedantic -Werror -Wconversion -Wshadow -Wno-unused-parameter)
 	target_compile_options(Example2 PRIVATE -Wall -Wextra -pedantic -Werror -Wconversion -Wshadow -Wno-unused-parameter)
+	target_compile_options(Example3 PRIVATE -Wall -Wextra -pedantic -Werror -Wconversion -Wshadow -Wno-unused-parameter)
 endif()
 
 target_include_directories(Example1 PRIVATE "src")
 target_include_directories(Example2 PRIVATE "src" "src/example2")
+target_include_directories(Example3 PRIVATE "src" "src/example3")
 	
 target_link_libraries(Example1 PRIVATE SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
 target_link_libraries(Example2 PRIVATE SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
+target_link_libraries(Example3 PRIVATE SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
 
 if(MSVC)
 	add_custom_command(
