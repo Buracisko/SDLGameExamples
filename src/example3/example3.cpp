@@ -88,6 +88,14 @@ Vec2 MultVector2(const Vec2 v, float val)
 	return Vec2 {v.x * val, v.y * val};
 }
 
+Vec2 NormalizeVec2(const Vec2 v)
+{
+	if (v.x == 0 && v.y == 0)
+		return v;
+	const float len = sqrtf(v.x * v.x + v.y * v.y);
+	return {v.x / len, v.y / len};
+}
+
 //=============================================================================
 
 void swapf(float* a, float* b)
@@ -220,14 +228,17 @@ void Update(float dt)
 	Vec2 displacement = {0, 0};
 
 	if (IsKeyDown(SDL_SCANCODE_RIGHT))
-		displacement.x += speed * dt;
+		displacement.x = 1;
 	else if (IsKeyDown(SDL_SCANCODE_LEFT))
-		displacement.x -= speed * dt;
+		displacement.x = -1;
 	
 	if (IsKeyDown(SDL_SCANCODE_DOWN))
-		displacement.y += speed * dt;
+		displacement.y = 1;
 	else if (IsKeyDown(SDL_SCANCODE_UP))
-		displacement.y -= speed * dt;
+		displacement.y = -1;
+
+	// Normalize
+	displacement = MultVector2(NormalizeVec2(displacement), speed * dt);
 
 	for (int i = 0; i < NO_RECTS; ++i)
 	{
