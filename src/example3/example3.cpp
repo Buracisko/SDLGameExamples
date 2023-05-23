@@ -69,23 +69,23 @@ int main(int argc, char* argv[])
 
 //=============================================================================
 
-struct Vector2 {
+struct Vec2 {
 	float x, y;
 };
 
-Vector2 AddVector2(const Vector2 v1, const Vector2 v2)
+Vec2 AddVector2(const Vec2 v1, const Vec2 v2)
 {
-	return Vector2 {v1.x + v2.x, v1.y + v2.y};
+	return Vec2 {v1.x + v2.x, v1.y + v2.y};
 }
 
-Vector2 SubVector2(const Vector2 v1, const Vector2 v2)
+Vec2 SubVector2(const Vec2 v1, const Vec2 v2)
 {
-	return Vector2 {v1.x - v2.x, v1.y - v2.y};
+	return Vec2 {v1.x - v2.x, v1.y - v2.y};
 }
 
-Vector2 MultVector2(const Vector2 v, float val)
+Vec2 MultVector2(const Vec2 v, float val)
 {
-	return Vector2 {v.x * val, v.y * val};
+	return Vec2 {v.x * val, v.y * val};
 }
 
 //=============================================================================
@@ -109,20 +109,20 @@ float minf(float a, float b)
 
 // Source: https://github.com/OneLoneCoder/Javidx9/blob/master/PixelGameEngine/SmallerProjects/OneLoneCoder_PGE_Rectangles.cpp
 
-bool RayVsRect(const Vector2* rayOrigin, const Vector2* rayDir,
-	const SDL_Rect* target, Vector2* contactPoint, Vector2* contactNormal,
+bool RayVsRect(const Vec2* rayOrigin, const Vec2* rayDir,
+	const SDL_Rect* target, Vec2* contactPoint, Vec2* contactNormal,
 	float* tHitNear
 )
 {
 	// Cache division to multiply instead of divide later
-	Vector2 invDir = {1.0f / rayDir->x, 1.0f / rayDir->y};
+	Vec2 invDir = {1.0f / rayDir->x, 1.0f / rayDir->y};
 
 	// Calculate intersections with rectangle bounding axes
-	Vector2 tNear = {
+	Vec2 tNear = {
 		((float)target->x - rayOrigin->x) * invDir.x,
 	 	((float)target->y - rayOrigin->y) * invDir.y
 	};
-	Vector2 tFar = {
+	Vec2 tFar = {
 		((float)(target->x + target->w) - rayOrigin->x) * invDir.x,
 		((float)(target->y + target->h) - rayOrigin->y) * invDir.y
 	};
@@ -173,7 +173,7 @@ bool RayVsRect(const Vector2* rayOrigin, const Vector2* rayDir,
 	return true;
 }
 
-bool RectVsRectCollision(const SDL_Rect* movingRect, const SDL_Rect* staticRect, Vector2* displacement, Vector2* contactPoint, Vector2* contactNormal, float* contactTime)
+bool RectVsRectCollision(const SDL_Rect* movingRect, const SDL_Rect* staticRect, Vec2* displacement, Vec2* contactPoint, Vec2* contactNormal, float* contactTime)
 {
 	// Check if rectangle is actually moving - we assume rectangles are NOT in collision to start
 	if (displacement->x == 0 && displacement->y == 0)
@@ -192,7 +192,7 @@ bool RectVsRectCollision(const SDL_Rect* movingRect, const SDL_Rect* staticRect,
 	expandedTargetRect.w += playerRect.w;
 	expandedTargetRect.h += playerRect.h;
 
-	Vector2 positionCenter = {
+	Vec2 positionCenter = {
 		(float)(movingRect->x + movingRect->w / 2),
 		(float)(movingRect->y + movingRect->h / 2)
 	};
@@ -217,7 +217,7 @@ void Update(float dt)
 		ExitGame();
 
 	const float speed = 150;
-	Vector2 displacement = {0, 0};
+	Vec2 displacement = {0, 0};
 
 	if (IsKeyDown(SDL_SCANCODE_RIGHT))
 		displacement.x += speed * dt;
@@ -232,8 +232,8 @@ void Update(float dt)
 	for (int i = 0; i < NO_RECTS; ++i)
 	{
 		// Collision information
-		Vector2 contactPoint = {};
-		Vector2 contactNormal = {};
+		Vec2 contactPoint = {};
+		Vec2 contactNormal = {};
 		float contactTime = .0f;
 
 		if (RectVsRectCollision(&playerRect, &rects[i], &displacement, &contactPoint, &contactNormal, &contactTime))
