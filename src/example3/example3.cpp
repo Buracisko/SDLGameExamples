@@ -73,22 +73,22 @@ struct Vec2 {
 	float x, y;
 };
 
-Vec2 AddVector2(const Vec2 v1, const Vec2 v2)
+Vec2 AddVectors(const Vec2 v1, const Vec2 v2)
 {
 	return Vec2 {v1.x + v2.x, v1.y + v2.y};
 }
 
-Vec2 SubVector2(const Vec2 v1, const Vec2 v2)
+Vec2 SubtractVectors(const Vec2 v1, const Vec2 v2)
 {
 	return Vec2 {v1.x - v2.x, v1.y - v2.y};
 }
 
-Vec2 MultVector2(const Vec2 v, float val)
+Vec2 MultiplyVector(const Vec2 v, float val)
 {
 	return Vec2 {v.x * val, v.y * val};
 }
 
-Vec2 NormalizeVec2(const Vec2 v)
+Vec2 NormalizeVector(const Vec2 v)
 {
 	if (v.x == 0 && v.y == 0)
 		return v;
@@ -238,7 +238,7 @@ void Update(float dt)
 		displacement.y = -1;
 
 	// Normalize
-	displacement = MultVector2(NormalizeVec2(displacement), speed * dt);
+	displacement = MultiplyVector(NormalizeVector(displacement), speed * dt);
 
 	for (int i = 0; i < NO_RECTS; ++i)
 	{
