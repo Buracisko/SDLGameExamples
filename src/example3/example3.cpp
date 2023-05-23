@@ -119,9 +119,13 @@ float minf(float a, float b)
 
 bool RayVsRect(const Vec2* rayOrigin, const Vec2* rayDir,
 	const SDL_Rect* target, Vec2* contactPoint, Vec2* contactNormal,
-	float* tHitNear
+	float* contactTime
 )
 {
+	*contactPoint = {};
+	*contactNormal = {};
+	*contactTime = .0f;
+
 	// Cache division to multiply instead of divide later
 	Vec2 invDir = {1.0f / rayDir->x, 1.0f / rayDir->y};
 
@@ -146,7 +150,7 @@ bool RayVsRect(const Vec2* rayOrigin, const Vec2* rayDir,
 	if (tNear.x > tFar.y || tNear.y > tFar.x) return false;
 
 	// Closest "time" will be the first contact
-	*tHitNear = maxf(tNear.x, tNear.y);
+	*contactTime = maxf(tNear.x, tNear.y);
 
 	// Furthest 'time' is contact on opposite side of target
 	float tHitFar = minf(tFar.x, tFar.y);
@@ -156,8 +160,8 @@ bool RayVsRect(const Vec2* rayOrigin, const Vec2* rayDir,
 		return false;
 
 	// Contact point of collision from parametric line equation
-	contactPoint->x = rayOrigin->x + *tHitNear * rayDir->x;
-	contactPoint->y = rayOrigin->y + *tHitNear * rayDir->y;
+	contactPoint->x = rayOrigin->x + *contactTime * rayDir->x;
+	contactPoint->y = rayOrigin->y + *contactTime * rayDir->y;
 
 	// Make better normal vectors using dot product
 	if (tNear.x > tNear.y)
@@ -188,10 +192,6 @@ bool RectVsRectCollision(const SDL_Rect* movingRect, const SDL_Rect* staticRect,
 	{
 		return false;
 	}
-
-	*contactPoint = {};
-	*contactNormal = {};
-	*contactTime = .0f;
 
 	// Expand target rectangle by source dimensions
 	SDL_Rect expandedTargetRect = *staticRect;
@@ -239,6 +239,12 @@ void Update(float dt)
 
 	// Normalize
 	displacement = MultiplyVector(NormalizeVector(displacement), speed * dt);
+
+	/*
+	TODO:
+		1. Sort collisions
+		2. Apply from nearest
+	*/
 
 	for (int i = 0; i < NO_RECTS; ++i)
 	{
