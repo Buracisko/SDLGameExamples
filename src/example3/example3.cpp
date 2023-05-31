@@ -21,7 +21,7 @@ SDL_Rect rects[NO_RECTS];
 
 void SetupRects()
 {
-	rects[0] = SDL_Rect {128, 128, 64, 64};
+	rects[0] = SDL_Rect {128, 128, 2, 2};
 	rects[1] = SDL_Rect {256, 128, 64, 64};
 
 	rects[2] = SDL_Rect {128, 256, 32, 32};
@@ -115,8 +115,6 @@ float minf(float a, float b)
 	return a < b ? a : b;
 }
 
-// Source: https://github.com/OneLoneCoder/Javidx9/blob/master/PixelGameEngine/SmallerProjects/OneLoneCoder_PGE_Rectangles.cpp
-
 bool RayVsRect(const Vec2* rayOrigin, const Vec2* rayDir,
 	const SDL_Rect* target, Vec2* contactPoint, Vec2* contactNormal,
 	float* contactTime
@@ -163,7 +161,7 @@ bool RayVsRect(const Vec2* rayOrigin, const Vec2* rayDir,
 	contactPoint->x = rayOrigin->x + *contactTime * rayDir->x;
 	contactPoint->y = rayOrigin->y + *contactTime * rayDir->y;
 
-	// Make better normal vectors using dot product
+	// Make better normal vectors, maybe using dot product of the collision edge?
 	if (tNear.x > tNear.y)
 	{
 		if (invDir.x < 0)
@@ -178,10 +176,6 @@ bool RayVsRect(const Vec2* rayOrigin, const Vec2* rayDir,
 		else
 			*contactNormal = {0, -1};
 	}
-
-	// Note if tNear == tFar, collision is principly in a diagonal
-	// so pointless to resolve. By returning a CN={0,0} even though its
-	// considered a hit, the resolver wont change anything.
 	return true;
 }
 
@@ -208,7 +202,7 @@ bool RectVsRectCollision(const SDL_Rect* movingRect, const SDL_Rect* staticRect,
 	// Are we colliding with the target rect?
 	if (RayVsRect(&positionCenter, displacement, &expandedTargetRect, contactPoint, contactNormal, contactTime))
 	{
-		if (*contactTime >= 0 && *contactTime <= 1.0f)
+		if (*contactTime >= 0 && *contactTime < 1.0f)
 		{
 			return true;
 		}
@@ -239,31 +233,66 @@ void Update(float dt)
 
 	// Normalize
 	displacement = MultiplyVector(NormalizeVector(displacement), speed * dt);
+	
+	// Holds information about particular collision
+	struct CollisionInfo
+	{
+		float Time;
+		Vec2 Normal;
+		Vec2 Point;
+		int rectIdx;
+	};
 
-	/*
-	TODO:
-		1. Sort collisions
-		2. Apply from nearest
-	*/
+	// Find all possible collisions
+	#define MAX_COLLISIONS NO_RECTS
+	CollisionInfo collisions [MAX_COLLISIONS] = {};
+	int colIdx = 0;
 
 	for (int i = 0; i < NO_RECTS; ++i)
 	{
-		// Collision information
-		Vec2 contactPoint = {};
-		Vec2 contactNormal = {};
-		float contactTime = .0f;
 
-		if (RectVsRectCollision(&playerRect, &rects[i], &displacement, &contactPoint, &contactNormal, &contactTime))
+		if (RectVsRectCollision(&playerRect, &rects[i], &displacement,
+			&collisions[colIdx].Point,
+			&collisions[colIdx].Normal,
+			&collisions[colIdx].Time))
 		{
-			// If diagonal colllision (normal == {0, 0}), just stop
-			if (contactNormal.x == 0 && contactNormal.y == 0)
+			collisions[colIdx++].rectIdx = i;
+		}
+	}
+
+	// Resolution of nearest collision
+	for (int i = colIdx - 1; i >= 0; --i)
+	{
+		// Find nearest
+		int nearest = i;
+		for (int j = i - 1; j >= 0; --j)
+		{
+			if (collisions[j].Time < collisions[nearest].Time)
 			{
-				displacement.x = displacement.y = 0;
+				nearest = j;
+			}
+		}
+
+		// Fast erase: store the nearest and overwrite it with the last one
+		CollisionInfo nearestCollision = collisions[nearest];
+		collisions[nearest] = collisions[i];
+
+		// Collide and resolve (have to collide because of subsequent collision)
+		
+		if (RectVsRectCollision(&playerRect, &rects[nearestCollision.rectIdx], &displacement,
+			&nearestCollision.Point,
+			&nearestCollision.Normal,
+			&nearestCollision.Time))
+		{
+			// If we have zero normal and its last collision - stop
+			if (nearestCollision.Normal.x == 0 && nearestCollision.Normal.y == 0)
+			{
+				continue;
 			}
 			else
 			{
-				displacement.x += contactNormal.x * fabsf(displacement.x) * (1 - contactTime);
-				displacement.y += contactNormal.y * fabsf(displacement.y) * (1 - contactTime);
+				displacement.x += nearestCollision.Normal.x * fabsf(displacement.x) * (1 - nearestCollision.Time);
+				displacement.y += nearestCollision.Normal.y * fabsf(displacement.y) * (1 - nearestCollision.Time);
 			}
 		}
 	}
