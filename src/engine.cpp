@@ -12,6 +12,8 @@ SDL_Renderer* gRenderer = NULL;
 static bool isRunning = true;
 static const Uint8* keyStates = NULL;
 static Uint8 lastKeyStates[SDL_NUM_SCANCODES];
+static int mouseWheelX = 0;
+static int mouseWheelY = 0;
 
 //=============================================================================
 bool InitSDL()
@@ -123,6 +125,19 @@ void StartLoop(void (*update)(float), void (*render)(float))
 				isRunning = false;
 				return;
 			}
+
+			if (e.type == SDL_MOUSEWHEEL)
+			{
+				mouseWheelX = e.wheel.x;
+				mouseWheelY = e.wheel.y;
+
+				// Flip direction to be consistent
+				if (e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
+				{
+					mouseWheelX *= -1;
+					mouseWheelY *= -1;
+				}
+			}
 		}
 
 		// Game logic and time handling
@@ -140,6 +155,9 @@ void StartLoop(void (*update)(float), void (*render)(float))
 			update((float)dt);
 			time += dt;
 			accumulator -= dt;
+
+			// Reset mouse events after update was called
+			mouseWheelX = mouseWheelY = 0;
 		}
 
 		if (!isRunning)
@@ -178,4 +196,38 @@ bool IsKeyReleased(SDL_Scancode scanCode)
 bool IsKeyPressed(SDL_Scancode scanCode)
 {
 	return !lastKeyStates[scanCode] && keyStates[scanCode];
+}
+
+//=============================================================================
+void SetCursorVisible(bool isVisible)
+{
+	SDL_ShowCursor(isVisible ? SDL_ENABLE : SDL_DISABLE);
+}
+
+//=============================================================================
+bool IsCursorVisible()
+{
+	return SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE;
+}
+
+//=============================================================================
+void GetMousePosition(int* x, int* y)
+{
+	SDL_GetMouseState(x, y);
+}
+
+//=============================================================================
+bool IsMouseButtonPressed(int button)
+{
+	int mouseState = SDL_GetMouseState(NULL, NULL);
+	return mouseState & SDL_BUTTON(button);
+}
+
+//=============================================================================
+void GetMouseWheel(int* x, int* y)
+{
+	// X positive = right, negative = left
+	*x = mouseWheelX;
+	// Y positive = from user (up)m negative = towards user (down)
+	*y = mouseWheelY;
 }

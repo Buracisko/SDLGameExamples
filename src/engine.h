@@ -60,3 +60,36 @@ Returns true, if key with provided scan code was pressed
 since previous update
 */
 bool IsKeyPressed(SDL_Scancode scanCode);
+
+/*!
+Controls visibility of system mouse cursor in the game window.
+Cursor shouldbe visible by default.
+*/
+void SetCursorVisible(bool isVisible);
+
+/*!
+Returns if the system cursor is shown in the game window.
+*/
+bool IsCursorVisible();
+
+/*!
+Sets provided pointees to position of the mouse withing the game window.
+Both x and y can be NULL.
+*/
+void GetMousePosition(int* x, int* y);
+
+/*!
+Returns the state of given button.
+\param button may be SDL_BUTTON_LEFT, SDL_BUTTON_MIDDLE or SDL_BUTTON_RIGHT
+*/
+bool IsMouseButtonPressed(int button);
+
+/*!
+Sets pointees to latest mouse wheel delta.
+Positive value of X means rifht
+Negative value of X means left
+Positive value of Y means from user (usually UP)
+Negative value of Y means towards user (usually down)
+Note: My Thinkpad laptom is returning me the X axis flipped
+*/
+void GetMouseWheel(int* x, int* y);
