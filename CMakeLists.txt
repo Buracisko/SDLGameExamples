@@ -1,16 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-project("SDL Game Example" VERSION 1.0 LANGUAGES CXX)
-
-# Sources
-set(CORE_SOURCES
-	src/engine.h
-	src/engine.cpp
-)
-
-source_group("Headers" FILES
-	src/engine.h
-)
+project("SDL Game Examples" VERSION 1.0 LANGUAGES CXX)
 
 # Set a default build type if none was specified
 # Use -DCMAKE_BUILD_TYPE=XXX to se build type
@@ -33,15 +23,24 @@ find_package(SDL2_image REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
+add_library(engineLib STATIC
+	"engine/engine.h"
+	"engine/engine.cpp"
+)
+target_include_directories(engineLib PRIVATE "engine")
+target_link_libraries(engineLib PRIVATE SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
+
 if (MSVC)
-	add_executable(Example1 WIN32 ${CORE_SOURCES} "src/example1/example1.cpp")
-	add_executable(Example2 WIN32 ${CORE_SOURCES}
-		"src/example2/example2.cpp"
-		"src/example2/ship.cpp"
-		"src/example2/ship.h"
+	add_executable(Example1 WIN32
+		"example1/example1.cpp"
 	)
-	add_executable(Example3 WIN32 ${CORE_SOURCES}
-		"src/example3/example3.cpp"
+	add_executable(Example2 WIN32
+		"example2/example2.cpp"
+		"example2/ship.cpp"
+		"example2/ship.h"
+	)
+	add_executable(Example3 WIN32
+		"example3/example3.cpp"
 	)
 
 	# warning level 3
@@ -50,6 +49,7 @@ if (MSVC)
 	target_compile_options(Example3 PRIVATE /W3)
 
 else()
+	# TODO: FIXME
 	add_executable(Example1 ${CORE_SOURCES} "src/example1/example1.cpp")
 	add_executable(Example2 ${CORE_SOURCES}
 		"src/example2/example2.cpp"
@@ -66,31 +66,31 @@ else()
 	target_compile_options(Example3 PRIVATE -Wall -Wextra -pedantic -Werror -Wconversion -Wshadow -Wno-unused-parameter)
 endif()
 
-target_include_directories(Example1 PRIVATE "src")
-target_include_directories(Example2 PRIVATE "src" "src/example2")
-target_include_directories(Example3 PRIVATE "src" "src/example3")
+target_include_directories(Example1 PRIVATE "engine" "example1")
+target_include_directories(Example2 PRIVATE "engine" "example2")
+target_include_directories(Example3 PRIVATE "engine" "example3")
 	
-target_link_libraries(Example1 PRIVATE SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
-target_link_libraries(Example2 PRIVATE SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
-target_link_libraries(Example3 PRIVATE SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
+target_link_libraries(Example1 PRIVATE engineLib SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
+target_link_libraries(Example2 PRIVATE engineLib SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
+target_link_libraries(Example3 PRIVATE engineLib SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
 
 if(MSVC)
 	add_custom_command(
-		TARGET Example1 POST_BUILD 
+		TARGET engineLib POST_BUILD 
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			"${CMAKE_CURRENT_SOURCE_DIR}/${SDL2_PATH}/lib/x64"
-			$<TARGET_FILE_DIR:Example1>
+			$<TARGET_FILE_DIR:engineLib>
 
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			"${CMAKE_CURRENT_SOURCE_DIR}/${SDL2_IMAGE_PATH}/lib/x64"
-			$<TARGET_FILE_DIR:Example1>
+			$<TARGET_FILE_DIR:engineLib>
 
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			"${CMAKE_CURRENT_SOURCE_DIR}/${SDL2_MIXER_PATH}/lib/x64"
-			$<TARGET_FILE_DIR:Example1>
+			$<TARGET_FILE_DIR:engineLib>
 
 			COMMAND ${CMAKE_COMMAND} -E copy_directory
 			"${CMAKE_CURRENT_SOURCE_DIR}/${SDL2_TTF_PATH}/lib/x64"
-			$<TARGET_FILE_DIR:Example1>
+			$<TARGET_FILE_DIR:engineLib>
 	)
 endif()
