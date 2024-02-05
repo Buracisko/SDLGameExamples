@@ -23,57 +23,41 @@ find_package(SDL2_image REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
+# Shared "engine" library
 add_library(engineLib STATIC
-	"engine/engine.h"
-	"engine/engine.cpp"
+	"src/engine/engine.h"
+	"src/engine/engine.cpp"
 )
-target_include_directories(engineLib PRIVATE "engine")
-target_link_libraries(engineLib PRIVATE SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
+# Warnings as errors. Use "--compile-no-warning-as-error" to temp disable this.
+set_property(TARGET engineLib PROPERTY COMPILE_WARNING_AS_ERROR ON)
+target_compile_options(engineLib PRIVATE
+  $<$<CXX_COMPILER_ID:MSVC>:/W4>
+  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+)
+target_include_directories(engineLib PUBLIC "src/engine")
+target_link_libraries(engineLib PUBLIC SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
 
-if (MSVC)
-	add_executable(Example1 WIN32
-		"example1/example1.cpp"
-	)
-	add_executable(Example2 WIN32
-		"example2/example2.cpp"
-		"example2/ship.cpp"
-		"example2/ship.h"
-	)
-	add_executable(Example3 WIN32
-		"example3/example3.cpp"
-	)
+# Example 1
+add_executable(Example1
+	"example1/src/example1.cpp"
+)
+target_link_libraries(Example1 PRIVATE engineLib)
 
-	# warning level 3
-	target_compile_options(Example1 PRIVATE /W3)
-	target_compile_options(Example2 PRIVATE /W3)
-	target_compile_options(Example3 PRIVATE /W3)
+# Example 2
+add_executable(Example2
+	"example2/src/example2.cpp"
+	"example2/src/ship.cpp"
+	"example2/src/ship.h"
+)
+target_link_libraries(Example2 PRIVATE engineLib)
 
-else()
-	# TODO: FIXME
-	add_executable(Example1 ${CORE_SOURCES} "src/example1/example1.cpp")
-	add_executable(Example2 ${CORE_SOURCES}
-		"src/example2/example2.cpp"
-		"src/example2/ship.cpp"
-		"src/example2/ship.h"
-	)
-	add_executable(Example3 ${CORE_SOURCES}
-		"src/example3/example3.cpp"
-	)
+# Example 3
+add_executable(Example3
+	"example3/src/example3.cpp"
+)
+target_link_libraries(Example3 PRIVATE engineLib)
 
-	# Warn a lot
-	target_compile_options(Example1 PRIVATE -Wall -Wextra -pedantic -Werror -Wconversion -Wshadow -Wno-unused-parameter)
-	target_compile_options(Example2 PRIVATE -Wall -Wextra -pedantic -Werror -Wconversion -Wshadow -Wno-unused-parameter)
-	target_compile_options(Example3 PRIVATE -Wall -Wextra -pedantic -Werror -Wconversion -Wshadow -Wno-unused-parameter)
-endif()
-
-target_include_directories(Example1 PRIVATE "engine" "example1")
-target_include_directories(Example2 PRIVATE "engine" "example2")
-target_include_directories(Example3 PRIVATE "engine" "example3")
-	
-target_link_libraries(Example1 PRIVATE engineLib SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
-target_link_libraries(Example2 PRIVATE engineLib SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
-target_link_libraries(Example3 PRIVATE engineLib SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
-
+# Copy libraries to output directory
 if(MSVC)
 	add_custom_command(
 		TARGET engineLib POST_BUILD 
