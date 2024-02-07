@@ -43,20 +43,6 @@ add_executable(Example1
 )
 target_link_libraries(Example1 PRIVATE engineLib)
 
-# Example 2
-add_executable(Example2
-	"example2/src/example2.cpp"
-	"example2/src/ship.cpp"
-	"example2/src/ship.h"
-)
-target_link_libraries(Example2 PRIVATE engineLib)
-
-# Example 3
-add_executable(Example3
-	"example3/src/example3.cpp"
-)
-target_link_libraries(Example3 PRIVATE engineLib)
-
 # Copy libraries to output directory
 if(MSVC)
 	add_custom_command(
