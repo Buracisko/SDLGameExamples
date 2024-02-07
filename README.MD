@@ -1,5 +1,10 @@
 # SDL2 Game Template
 
+## TODO
+- Organize assets
+- Example 1 - basic texutre render
+- Example 2 - advanced texture render (sprite)
+
 ## Windows setup
 ### 1. Clone this repository
 Clone this repository.
