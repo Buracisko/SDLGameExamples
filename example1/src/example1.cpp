@@ -9,9 +9,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-// Forward function declarations
 void Update(float dt);
 void RenderFrame(float dt);
+bool OnGameStart();
+void OnGameEnd();
+
 SDL_Texture* RenderText(const char* str, SDL_Colour colour, TTF_Font* font, SDL_Rect* textRect);
 
 #define WINDOW_WIDTH 640
@@ -33,10 +35,6 @@ SDL_Rect mess1Rect;
 SDL_Rect mess2Rect;
 SDL_Rect mess3Rect;
 
-// Ship rotation
-double shipRotation;
-
-//=============================================================================
 int main(int argc, char* argv[])
 {
 	if (!InitSDL())
@@ -48,7 +46,22 @@ int main(int argc, char* argv[])
 	{
 		return 1;
 	}
-	
+
+	if (!OnGameStart())
+	{
+		return 1;
+	}
+
+	// Push functions to the game loop
+	StartLoop(Update, RenderFrame);
+
+	OnGameEnd();
+	DeinitSDL();
+	return 0;
+}
+
+bool OnGameStart()
+{
 	// Load ship sprites
 	ship1 = LoadSprite("assets/kenney_piratepack/PNG/Default size/Ships/ship (3).png");
 	ship2 = LoadSprite("assets/kenney_piratepack/PNG/Default size/Ships/ship (5).png");
@@ -60,7 +73,7 @@ int main(int argc, char* argv[])
 	if (!mainFont)
 	{
 		fprintf(stderr, "TTF_OpenFont error: %s\n", TTF_GetError());
-		return 1;
+		return false;
 	}
 
 	// Render text
@@ -69,9 +82,11 @@ int main(int argc, char* argv[])
 	mess2Texture = RenderText("Rotated & flipped", textCol, mainFont, &mess2Rect);
 	mess3Texture = RenderText("Scaled", textCol, mainFont, &mess3Rect);
 
-	// Push functions to the game loop
-	StartLoop(Update, RenderFrame);
+	return true;
+}
 
+void OnGameEnd()
+{
 	// Delete sprite textures
 	if (ship1) SDL_DestroyTexture(ship1);
 	if (ship2) SDL_DestroyTexture(ship2);
@@ -83,12 +98,7 @@ int main(int argc, char* argv[])
 
 	// Free font
 	TTF_CloseFont(mainFont);
-
-	DeinitSDL();
-	return 0;
 }
-
-//=============================================================================
 
 void Update(float dt)
 {
@@ -96,9 +106,6 @@ void Update(float dt)
 	// in order to see the stderr output
 	if (IsKeyDown(SDL_SCANCODE_ESCAPE))
 		ExitGame();
-
-	const double revolutionsPerSecond = .5;
-	shipRotation += dt * revolutionsPerSecond * 360;
 }
 
 void RenderFrame(float interpolation)
