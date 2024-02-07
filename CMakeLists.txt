@@ -27,6 +27,8 @@ find_package(SDL2_ttf REQUIRED)
 add_library(engineLib STATIC
 	"src/engine/engine.h"
 	"src/engine/engine.cpp"
+	"src/sprites/sprite.h"
+	"src/sprites/sprite.cpp"
 )
 # Warnings as errors. Use "--compile-no-warning-as-error" to temp disable this.
 set_property(TARGET engineLib PROPERTY COMPILE_WARNING_AS_ERROR ON)
@@ -34,7 +36,7 @@ target_compile_options(engineLib PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/W4>
   $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
 )
-target_include_directories(engineLib PUBLIC "src/engine")
+target_include_directories(engineLib PUBLIC "src/")
 target_link_libraries(engineLib PUBLIC SDL2::Core SDL2::Main SDL2::Image SDL2::Mixer SDL2::TTF)
 
 # Example 1

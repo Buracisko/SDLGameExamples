@@ -1,4 +1,5 @@
-#include "engine.h"
+#include "engine/engine.h"
+#include "sprites/sprite.h"
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_mixer.h"
@@ -11,7 +12,6 @@
 // Forward function declarations
 void Update(float dt);
 void RenderFrame(float dt);
-SDL_Texture* LoadSprite(const char* path);
 SDL_Texture* RenderText(const char* str, SDL_Colour colour, TTF_Font* font, SDL_Rect* textRect);
 
 #define WINDOW_WIDTH 640
@@ -184,19 +184,6 @@ void RenderFrame(float interpolation)
 	mess5Rect.x = col * colWidht + colWidht / 2 - mess5Rect.w / 2;
 	mess5Rect.y = verticalCenter + 128;
 	SDL_RenderCopy(gRenderer, mess5Texture, NULL, &mess5Rect);
-}
-
-SDL_Texture* LoadSprite(const char* path)
-{
-
-	SDL_Texture* texture = IMG_LoadTexture(gRenderer, path);
-	if (texture == NULL)
-	{
-		fprintf(stderr, "IMG_LoadTexture error: %s\n", IMG_GetError());
-		return NULL;
-	}
-
-	return texture;
 }
 
 SDL_Texture* RenderText(const char* str, SDL_Colour colour, TTF_Font* font, SDL_Rect* textRect)
